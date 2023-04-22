@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Toronto Crime Analysis Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" integrity="sha512-zTuTnf+qarJlsyjKX9FAbZNtDylBtYzG4J00gC+vmZLH4FbdvSyz/BXgXJQRpg2+7lAFe6Z+U6jn8O6OQhNMDQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js" integrity="sha512-D3uJ7Vng+EzYfAta7d8gzJxlZ+m7RZMSvM2V7D8pbqJ3V7xfBuOFwUgWlU8iHbx2V6tzPNr5r5W5yIMK48Hf/Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="utf-8">
+    <style>
+      html,
+      body,
+      #mapid {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <style>
+      .marker-popup {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        text-align: left;
+      }
+      .marker-popup h3 {
+        margin: 0 0 5px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .marker-popup p {
+        margin: 0;
+      }
+      .marker-popup .invage {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <h1><img src="https://torontops.maps.arcgis.com/sharing/rest/content/items/3015761ee8db4586a5922d7d76173749/data" width="13%" ><u>Toronto Crime Analysis </u></h1>
+    <style>
+    h1 {
+      border-radius: 10px;
+     padding: 20px;
+      text-align: center;
+      font-size: 40px;
+      font-weight: bold;
+      font-style: italic;
+      margin-top: 50px;
+      margin-bottom: 30px;
+      color: black;
+      display: flex;
+      align-items: center;
+    }
+select {
+      width: 150px;
+      margin-right: 10px;
+    }
+    #form {
+      margin: 30px auto;
+      background-color: orange;
+      padding: 20px;
+      border-radius: 10px;
+      align-items: center;
+      display: flex;
+      justify-content: space-evenly;
+      font-size: 150%;
+    }
+body{
+  background-image: url('https://www.shutterstock.com/image-photo/blurry-background-toronto-city-skyline-260nw-567273571.jpg');
+      background-size: cover;
+      background-color: white;
+}
+    #form select,
+    #form input {
+      font-size: 16px;
+      padding: 5px;
+      margin: 10px;
+      border-radius: 5px;
+      border: none;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    #form select {
+      width: 120px;
+    }
+    #form input[type='submit'] {
+      background-color: #0077BE;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #form input[type='submit']:hover {
+      background-color: #00568C;
+    }
+    a {
+      color: black;
+      text-decoration: none;
+      border-bottom: 1px solid blue;
+    }
+    /* Style the link when hovered over */
+    a:hover {
+      color: red;
+      border-bottom: 1px solid red;
+    }
+</style>
+    <div id="form">
+        <form>
+          <label for="start-year">Start Year:</label>
+          <select id="start-year" name="start-year">
+              <option value="2014">2014</option>
+              <option value="2015">2015</option>
+              <option value="2016">2016</option>
+              <option value="2017">2017</option>
+              <option value="2018">2018</option>
+              <option value="2019">2019</option>
+              <option value="2020">2020</option>
+              <option value="2019">2021</option>
+              <option value="2020">2022</option>
+            </select>
+            <label for="end-year">End Year:</label>
+            <select id="end-year" name="end-year">
+              <option value="2014">2014</option>
+              <option value="2015">2015</option>
+              <option value="2016">2016</option>
+              <option value="2017">2017</option>
+              <option value="2018">2018</option>
+              <option value="2019">2019</option>
+              <option value="2020">2020</option>
+              <option value="2019">2021</option>
+              <option value="2020">2022</option>
+            </select>
+            <label for="crime-type">Crime Type:</label>
+            <select id="crime-type" name="crime-type">
+              <option value="auto_theft">Auto Theft</option>
+              <option value="assault">Assault</option>
+              <option value="bike_theft">Bicycle Theft</option>
+              <option value="homicide">Homicides</option>
+              <option value="robbery">Robbery</option>
+              <option value="shooting">Shooting & Firearm</option>
+              <option value="theft_from_vehicle">Theft Motor Vehicle</option>
+              <option value="theft_over">Theft Over</option>
+              <option value="break_and_enter">Break and Enter</option>
+            </select>
+            <label for="neighborhood">Neighborhoods:</label>
+            <select id="neighborhood" name="neighborhood">
+            </select>
+            <input type="submit" id="submit-button" value="Submit">
+        </form></div>
+        <!-- <div id="yearly-line-plot"></div> -->
+        <div class="row">
+          <div class="col-sm-4">
+            <div id="yearly-line-plot"></div>
+          </div>
+          <div class="col-sm-4">
+            <div id="radial-chart"></div>
+          </div>
+          <div class="col-sm-4">
+            <div id="bar-chart"></div>
+          </div>
+        </div>
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
+        <div id="mapid" style="height: 500px; width: 100%;"></div>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="test2.js"></script>
+  </body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Toronto Crime Map</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <style>
+      html,
+      body,
+      #mapid {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <style>
+      .marker-popup {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        text-align: left;
+      }
+      .marker-popup h3 {
+        margin: 0 0 5px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .marker-popup p {
+        margin: 0;
+      }
+      .marker-popup .invage {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="mapid"></div>
+    <script>
+      // Initialize the map
+      var mymap = L.map("mapid").setView([43.6532, -79.3832], 11);
+      // Add the tile layer to the map
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+        maxZoom: 18,
+      }).addTo(mymap);
+      // Load the crime data from the specified URL and plot markers on the map
+      $.getJSON(
+        `http://localhost:5000/crime_data?crime_type=${crimeType.property("value")}&neighborhood=${neighborhood.property("value")}&start_year=${yearStart.property("value")}&end_year=${yearEnd.property("value")}`,
+        
+        function (data) {
+          // Loop through each crime record
+          $.each(data.features, function (key, val) {
+            // Get the latitude and longitude of the crime location
+            var lat = val.geometry.y;
+            var lng = val.geometry.x;
+            // Create a marker for the crime location
+            var marker = L.marker([lat, lng]).addTo(mymap);
+            // Add a popup to the marker with the INVAGE and INJURY
+            var popupContent =
+              "<div class='marker-popup'>" +
+              "<h3>Age Group: <span class='invage'>" +
+                val.attributes.HOOD_158 +
+              "</span></h3>" +
+              "<p>INJURY: " +
+              val.attributes.NEIGHBOURHOOD_15 +
+              "</p>" +
+              "</div>";
+            marker.bindPopup(popupContent);
+          });
+        }
+      );
+    </script>
+  </body>
+</html>
